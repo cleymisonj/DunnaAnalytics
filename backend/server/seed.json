@@ -1,0 +1,519 @@
+[
+  {
+    "id": "hyundai-creta-action",
+    "brand": "Hyundai",
+    "model": "Creta",
+    "version": "Action 1.6 Automático",
+    "year": 2021,
+    "yearMade": 2021,
+    "price": 92990,
+    "mileage": 72000,
+    "transmission": "Automático",
+    "fuel": "Flex",
+    "body": "SUV",
+    "color": "Preto",
+    "badge": "Destaque",
+    "condition": "Seminovo",
+    "images": [
+      "/veiculos/hyundai-creta-action/01.jpg",
+      "/veiculos/hyundai-creta-action/02.jpg",
+      "/veiculos/hyundai-creta-action/03.jpg",
+      "/veiculos/hyundai-creta-action/04.jpg",
+      "/veiculos/hyundai-creta-action/05.jpg",
+      "/veiculos/hyundai-creta-action/06.jpg",
+      "/veiculos/hyundai-creta-action/07.jpg",
+      "/veiculos/hyundai-creta-action/08.jpg",
+      "/veiculos/hyundai-creta-action/09.jpg",
+      "/veiculos/hyundai-creta-action/10.jpg",
+      "/veiculos/hyundai-creta-action/11.jpg",
+      "/veiculos/hyundai-creta-action/12.jpg"
+    ],
+    "specs": [
+      {
+        "label": "Motor",
+        "value": "1.6 16V Flex"
+      },
+      {
+        "label": "Câmbio",
+        "value": "Automático de 6 marchas"
+      },
+      {
+        "label": "Tração",
+        "value": "Dianteira"
+      },
+      {
+        "label": "Portas",
+        "value": "5"
+      }
+    ],
+    "options": [
+      "Ar-condicionado",
+      "Direção elétrica",
+      "Vidros e travas elétricos",
+      "Rádio com Bluetooth",
+      "Volante multifuncional",
+      "Rodas de liga leve"
+    ]
+  },
+  {
+    "id": "toyota-corolla-gli",
+    "brand": "Toyota",
+    "model": "Corolla",
+    "version": "GLi 1.8 Automático",
+    "year": 2016,
+    "yearMade": 2015,
+    "price": 83990,
+    "mileage": 122169,
+    "transmission": "Automático",
+    "fuel": "Flex",
+    "body": "Sedan",
+    "color": "Preto",
+    "condition": "Seminovo",
+    "images": [
+      "/veiculos/toyota-corolla-gli/01.jpg",
+      "/veiculos/toyota-corolla-gli/02.jpg",
+      "/veiculos/toyota-corolla-gli/03.jpg",
+      "/veiculos/toyota-corolla-gli/04.jpg",
+      "/veiculos/toyota-corolla-gli/05.jpg",
+      "/veiculos/toyota-corolla-gli/06.jpg",
+      "/veiculos/toyota-corolla-gli/07.jpg",
+      "/veiculos/toyota-corolla-gli/08.jpg",
+      "/veiculos/toyota-corolla-gli/09.jpg",
+      "/veiculos/toyota-corolla-gli/10.jpg"
+    ],
+    "specs": [
+      {
+        "label": "Motor",
+        "value": "1.8 16V Dual VVT-i Flex"
+      },
+      {
+        "label": "Câmbio",
+        "value": "Automático CVT"
+      },
+      {
+        "label": "Tração",
+        "value": "Dianteira"
+      },
+      {
+        "label": "Portas",
+        "value": "4"
+      }
+    ],
+    "options": [
+      "Bancos em couro bege",
+      "Central multimídia",
+      "Ar-condicionado digital",
+      "Volante multifuncional",
+      "Vidros e travas elétricos",
+      "Rodas de liga leve"
+    ]
+  },
+  {
+    "id": "honda-city-personal",
+    "brand": "Honda",
+    "model": "City",
+    "version": "Personal 1.5 Automático",
+    "year": 2018,
+    "yearMade": 2017,
+    "price": 77990,
+    "mileage": 110000,
+    "transmission": "Automático",
+    "fuel": "Flex",
+    "body": "Sedan",
+    "color": "Preto",
+    "condition": "Seminovo",
+    "images": [
+      "/veiculos/honda-city-personal/01.jpg",
+      "/veiculos/honda-city-personal/02.jpg",
+      "/veiculos/honda-city-personal/03.jpg",
+      "/veiculos/honda-city-personal/04.jpg",
+      "/veiculos/honda-city-personal/05.jpg",
+      "/veiculos/honda-city-personal/06.jpg",
+      "/veiculos/honda-city-personal/07.jpg",
+      "/veiculos/honda-city-personal/08.jpg",
+      "/veiculos/honda-city-personal/09.jpg",
+      "/veiculos/honda-city-personal/10.jpg",
+      "/veiculos/honda-city-personal/11.jpg"
+    ],
+    "specs": [
+      {
+        "label": "Motor",
+        "value": "1.5 16V i-VTEC Flex"
+      },
+      {
+        "label": "Câmbio",
+        "value": "Automático CVT"
+      },
+      {
+        "label": "Tração",
+        "value": "Dianteira"
+      },
+      {
+        "label": "Portas",
+        "value": "4"
+      }
+    ],
+    "options": [
+      "Bancos em couro",
+      "Central multimídia",
+      "Ar-condicionado",
+      "Direção elétrica",
+      "Vidros e travas elétricos",
+      "Rodas de liga leve"
+    ]
+  },
+  {
+    "id": "renault-captur-life",
+    "brand": "Renault",
+    "model": "Captur",
+    "version": "Life 1.6 Automático",
+    "year": 2019,
+    "yearMade": 2018,
+    "price": 70990,
+    "mileage": 102000,
+    "transmission": "Automático",
+    "fuel": "Flex",
+    "body": "SUV",
+    "color": "Branco",
+    "condition": "Seminovo",
+    "images": [
+      "/veiculos/renault-captur-life/01.jpg",
+      "/veiculos/renault-captur-life/02.jpg",
+      "/veiculos/renault-captur-life/03.jpg",
+      "/veiculos/renault-captur-life/04.jpg",
+      "/veiculos/renault-captur-life/05.jpg",
+      "/veiculos/renault-captur-life/06.jpg",
+      "/veiculos/renault-captur-life/07.jpg",
+      "/veiculos/renault-captur-life/08.jpg",
+      "/veiculos/renault-captur-life/09.jpg",
+      "/veiculos/renault-captur-life/10.jpg",
+      "/veiculos/renault-captur-life/11.jpg",
+      "/veiculos/renault-captur-life/12.jpg"
+    ],
+    "specs": [
+      {
+        "label": "Motor",
+        "value": "1.6 16V SCe Flex"
+      },
+      {
+        "label": "Câmbio",
+        "value": "Automático CVT"
+      },
+      {
+        "label": "Tração",
+        "value": "Dianteira"
+      },
+      {
+        "label": "Portas",
+        "value": "5"
+      }
+    ],
+    "options": [
+      "Bancos revestidos em couro",
+      "Central multimídia Media Nav",
+      "Ar-condicionado",
+      "Direção elétrica",
+      "Vidros e travas elétricos",
+      "Piloto automático"
+    ]
+  },
+  {
+    "id": "ford-ecosport-se",
+    "brand": "Ford",
+    "model": "EcoSport",
+    "version": "SE 1.6 Manual",
+    "year": 2015,
+    "yearMade": 2014,
+    "price": 55990,
+    "mileage": 170000,
+    "transmission": "Manual",
+    "fuel": "Flex",
+    "body": "SUV",
+    "color": "Prata",
+    "condition": "Seminovo",
+    "images": [
+      "/veiculos/ford-ecosport-se/01.jpg",
+      "/veiculos/ford-ecosport-se/02.jpg",
+      "/veiculos/ford-ecosport-se/03.jpg",
+      "/veiculos/ford-ecosport-se/04.jpg",
+      "/veiculos/ford-ecosport-se/05.jpg",
+      "/veiculos/ford-ecosport-se/06.jpg",
+      "/veiculos/ford-ecosport-se/07.jpg",
+      "/veiculos/ford-ecosport-se/08.jpg",
+      "/veiculos/ford-ecosport-se/09.jpg",
+      "/veiculos/ford-ecosport-se/10.jpg"
+    ],
+    "specs": [
+      {
+        "label": "Motor",
+        "value": "1.6 16V Flex"
+      },
+      {
+        "label": "Câmbio",
+        "value": "Manual de 5 marchas"
+      },
+      {
+        "label": "Tração",
+        "value": "Dianteira"
+      },
+      {
+        "label": "Portas",
+        "value": "5"
+      }
+    ],
+    "options": [
+      "Bancos em couro claro",
+      "Estepe externo com capa",
+      "Ar-condicionado",
+      "Direção elétrica",
+      "Vidros e travas elétricos",
+      "Rodas de liga leve"
+    ]
+  },
+  {
+    "id": "suzuki-grand-vitara-4wd",
+    "brand": "Suzuki",
+    "model": "Grand Vitara",
+    "version": "2.0 4WD Automático",
+    "year": 2010,
+    "yearMade": 2009,
+    "price": 49990,
+    "mileage": 172000,
+    "transmission": "Automático",
+    "fuel": "Flex",
+    "body": "SUV",
+    "color": "Prata",
+    "condition": "Seminovo",
+    "images": [
+      "/veiculos/suzuki-grand-vitara-4wd/01.jpg",
+      "/veiculos/suzuki-grand-vitara-4wd/02.jpg",
+      "/veiculos/suzuki-grand-vitara-4wd/03.jpg",
+      "/veiculos/suzuki-grand-vitara-4wd/04.jpg",
+      "/veiculos/suzuki-grand-vitara-4wd/05.jpg",
+      "/veiculos/suzuki-grand-vitara-4wd/06.jpg",
+      "/veiculos/suzuki-grand-vitara-4wd/07.jpg",
+      "/veiculos/suzuki-grand-vitara-4wd/08.jpg",
+      "/veiculos/suzuki-grand-vitara-4wd/09.jpg",
+      "/veiculos/suzuki-grand-vitara-4wd/10.jpg"
+    ],
+    "specs": [
+      {
+        "label": "Motor",
+        "value": "2.0 16V Flex"
+      },
+      {
+        "label": "Câmbio",
+        "value": "Automático"
+      },
+      {
+        "label": "Tração",
+        "value": "4x4 (4WD)"
+      },
+      {
+        "label": "Portas",
+        "value": "5"
+      }
+    ],
+    "options": [
+      "Tração 4x4",
+      "Bancos em couro",
+      "Central multimídia",
+      "Ar-condicionado",
+      "Engate",
+      "Estepe externo com capa"
+    ]
+  },
+  {
+    "id": "fiat-palio-attractive",
+    "brand": "Fiat",
+    "model": "Palio",
+    "version": "Attractive 1.4 Manual",
+    "year": 2015,
+    "yearMade": 2014,
+    "price": 42990,
+    "mileage": 178000,
+    "transmission": "Manual",
+    "fuel": "Flex",
+    "body": "Hatch",
+    "color": "Prata",
+    "condition": "Seminovo",
+    "images": [
+      "/veiculos/fiat-palio-attractive/01.jpg",
+      "/veiculos/fiat-palio-attractive/02.jpg",
+      "/veiculos/fiat-palio-attractive/03.jpg",
+      "/veiculos/fiat-palio-attractive/04.jpg",
+      "/veiculos/fiat-palio-attractive/05.jpg",
+      "/veiculos/fiat-palio-attractive/06.jpg",
+      "/veiculos/fiat-palio-attractive/07.jpg",
+      "/veiculos/fiat-palio-attractive/08.jpg",
+      "/veiculos/fiat-palio-attractive/09.jpg",
+      "/veiculos/fiat-palio-attractive/10.jpg"
+    ],
+    "specs": [
+      {
+        "label": "Motor",
+        "value": "1.4 Fire Evo Flex"
+      },
+      {
+        "label": "Câmbio",
+        "value": "Manual de 5 marchas"
+      },
+      {
+        "label": "Tração",
+        "value": "Dianteira"
+      },
+      {
+        "label": "Portas",
+        "value": "5"
+      }
+    ],
+    "options": [
+      "Ar-condicionado",
+      "Direção hidráulica",
+      "Vidros elétricos dianteiros",
+      "Travas elétricas",
+      "Rádio"
+    ]
+  },
+  {
+    "id": "import-20261026-kwid-zen",
+    "brand": "Renault",
+    "model": "Kwid",
+    "version": "Zen 1.0 Manual",
+    "color": "Branco",
+    "year": 2026,
+    "yearMade": 2025,
+    "price": 64990,
+    "mileage": 23752,
+    "transmission": "Manual",
+    "body": "Hatch",
+    "fuel": "Flex",
+    "condition": "Seminovo",
+    "status": "draft",
+    "armored": false,
+    "documentation": "",
+    "description": "Renault Kwid Zen 1.0 Manual, ano 2025/2026, Flex, branco, com 23.752 km. Consulte disponibilidade e condições com a loja.",
+    "images": [
+      "/veiculos/import-20261026-kwid-zen-aero/01.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/02.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/03.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/04.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/05.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/06.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/07.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/08.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/09.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/10.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/11.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/12.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/13.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/14.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/15.jpg",
+      "/veiculos/import-20261026-kwid-zen-aero/16.jpg"
+    ],
+    "options": [],
+    "specs": [
+      {
+        "label": "Motor",
+        "value": "1.0"
+      }
+    ]
+  },
+  {
+    "id": "import-20261026-strada-freedom",
+    "brand": "Fiat",
+    "model": "Strada",
+    "version": "Freedom CD 1.3 Manual",
+    "color": "Branco",
+    "year": 2025,
+    "yearMade": 2024,
+    "price": 111990,
+    "mileage": 42379,
+    "transmission": "Manual",
+    "body": "Picape",
+    "fuel": "Flex",
+    "condition": "Seminovo",
+    "status": "draft",
+    "armored": false,
+    "documentation": "",
+    "description": "Fiat Strada Freedom CD 1.3 Manual, ano 2024/2025, Flex, branco, com 42.379 km. Consulte disponibilidade e condições com a loja.",
+    "images": [
+      "/veiculos/import-20261026-strada-freedom-aero/01.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/02.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/03.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/04.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/05.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/06.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/07.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/08.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/09.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/10.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/11.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/12.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/13.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/14.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/15.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/16.jpg",
+      "/veiculos/import-20261026-strada-freedom-aero/17.jpg"
+    ],
+    "options": [],
+    "specs": [
+      {
+        "label": "Motor",
+        "value": "1.3"
+      },
+      {
+        "label": "Cabine",
+        "value": "Dupla"
+      }
+    ]
+  },
+  {
+    "id": "import-20261026-saveiro-cd",
+    "brand": "Volkswagen",
+    "model": "Saveiro",
+    "version": "CD 1.6 Manual",
+    "color": "Branco",
+    "year": 2015,
+    "yearMade": 2014,
+    "price": 65990,
+    "mileage": 113000,
+    "transmission": "Manual",
+    "body": "Picape",
+    "fuel": "Flex",
+    "condition": "Seminovo",
+    "status": "draft",
+    "armored": false,
+    "documentation": "",
+    "description": "Volkswagen Saveiro CD 1.6 Manual, ano 2014/2015, Flex, branco, com 113.000 km. Consulte disponibilidade e condições com a loja.",
+    "images": [
+      "/veiculos/import-20261026-saveiro-cd-aero/01.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/02.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/03.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/04.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/05.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/06.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/07.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/08.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/09.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/10.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/11.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/12.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/13.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/14.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/15.jpg",
+      "/veiculos/import-20261026-saveiro-cd-aero/16.jpg"
+    ],
+    "options": [],
+    "specs": [
+      {
+        "label": "Motor",
+        "value": "1.6"
+      },
+      {
+        "label": "Cabine",
+        "value": "Dupla"
+      }
+    ]
+  }
+]

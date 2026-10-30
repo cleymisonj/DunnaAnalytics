@@ -1,0 +1,30 @@
+import { useEffect, useState } from 'react'
+import { CarFront, Users, ShieldCheck, ChevronDown, Wallet, Handshake, Plug, UserRound, ChartNoAxesCombined, Scale, LayoutDashboard, BrainCircuit } from 'lucide-react'
+import type { Role } from './api'
+export type Screen='dashboard'|'stock'|'crm'|'stores'|'users'|'integrations'|'renave'|'people'|'deals'|'finance'|'profile'|'purchases'|'costs'|'consignments'|'analytics'|'performance'|'appraisals'|'contracts'|'preparation'|'aging'|'agenda'|'pending'|'insights'|'tags'
+export type Destination={screen:Screen;view:string;label:string;focus?:string}
+export function navigationGroups(role:Role){
+ const admin=role!=='seller'
+ return [
+  {id:'home',label:'Minha loja',icon:LayoutDashboard,items:[{screen:'dashboard',view:'all',label:'Painel do dia'},{screen:'pending',view:'all',label:'Pendências'},{screen:'agenda',view:'all',label:'Agenda'},{screen:'agenda',view:'mine',label:'Minhas tarefas'},{screen:'agenda',view:'done',label:'Tarefas concluídas'}] as Destination[]},
+  ...(admin?[{id:'insights',label:'Inteligência',icon:BrainCircuit,items:[{screen:'insights',view:'all',label:'Visão executiva'},{screen:'insights',view:'dre',label:'Resultado (DRE)'},{screen:'insights',view:'stock',label:'Estoque e giro'},{screen:'insights',view:'funnel',label:'Funil e conversão'},{screen:'insights',view:'team',label:'Equipe'}] as Destination[]}]:[]),
+  {id:'vehicles',label:'Veículos',icon:CarFront,items:[{screen:'stock',view:'all',label:'Todo o estoque'},{screen:'stock',view:'available',label:'Disponíveis'},{screen:'stock',view:'reserved',label:'Reservados'},{screen:'stock',view:'sold',label:'Vendidos'},{screen:'stock',view:'draft',label:'Rascunhos'},...(admin?[{screen:'preparation',view:'all',label:'Preparação'},{screen:'aging',view:'all',label:'Idade do estoque'}]:[]),...(admin?[{screen:'purchases',view:'all',label:'Compras de veículos'},{screen:'consignments',view:'all',label:'Consignações'},{screen:'costs',view:'all',label:'Custos por veículo'},{screen:'integrations',view:'all',label:'Portais de venda'}]:[])] as Destination[]},
+  ...(admin?[{id:'people',label:'Pessoas',icon:Users,items:[{screen:'people',view:'all',label:'Todos os cadastros'},{screen:'people',view:'customer',label:'Clientes'},{screen:'people',view:'supplier',label:'Fornecedores'},{screen:'people',view:'partner',label:'Parceiros'},{screen:'people',view:'archived',label:'Arquivados'}] as Destination[]}]:[]),
+  {id:'commercial',label:'Comercial',icon:Handshake,items:[{screen:'crm',view:'all',label:'Funil de oportunidades'},...(admin?[{screen:'appraisals',view:'all',label:'Avaliações de usados'}]:[]),...(admin?[]:[{screen:'performance',view:'all',label:'Minhas comissões'}]),...(admin?[{screen:'deals',view:'all',label:'Todas as negociações'},{screen:'deals',view:'draft',label:'Rascunhos de proposta'},{screen:'deals',view:'proposal',label:'Propostas'},{screen:'deals',view:'completed',label:'Vendas concluídas'},{screen:'deals',view:'cancelled',label:'Negociações canceladas'}]:[])] as Destination[]},
+  ...(admin?[
+   {id:'finance',label:'Financeiro',icon:Wallet,items:[{screen:'finance',view:'all',label:'Visão geral'},{screen:'finance',view:'expense',label:'Contas a pagar'},{screen:'finance',view:'income',label:'Contas a receber'},{screen:'finance',view:'paid',label:'Contas baixadas'},{screen:'finance',view:'cashflow',label:'Fluxo de caixa'},{screen:'finance',view:'statement',label:'Extrato por conta'},{screen:'finance',view:'settings',label:'Contas e categorias'}] as Destination[]},
+   {id:'legal',label:'Jurídico',icon:Scale,items:[{screen:'contracts',view:'all',label:'Contratos'},{screen:'contracts',view:'pending',label:'Documentos pendentes'},{screen:'contracts',view:'settings',label:'Dados da loja'}] as Destination[]},
+   {id:'reports',label:'Relatórios',icon:ChartNoAxesCombined,items:[{screen:'performance',view:'all',label:'Margem e comissões'},{screen:'analytics',view:'all',label:'Desempenho dos veículos'}] as Destination[]},
+   {id:'integrations',label:'Integrações oficiais',icon:Plug,items:[{screen:'renave',view:'all',label:'Preparação RENAVE'}] as Destination[]},
+   {id:'administration',label:'Administrativo',icon:ShieldCheck,items:[{screen:'users',view:'all',label:'Equipe e acessos'},{screen:'tags',view:'all',label:'Etiquetas'},...(role==='platform'?[{screen:'stores',view:'all',label:'Lojas e estabelecimentos'}]:[])] as Destination[]}
+  ]:[]),
+  {id:'account',label:'Minha conta',icon:UserRound,items:[{screen:'profile',view:'all',label:'Meu perfil'}] as Destination[]}
+ ]
+}
+export default function AdminNavigation({role,screen,view,onNavigate,collapsed=false,onExpand}:{role:Role;screen:Screen;view:string;onNavigate:(destination:Destination)=>void;collapsed?:boolean;onExpand:()=>void}){
+ const groups=navigationGroups(role)
+ const active=groups.find(g=>g.items.some(i=>i.screen===screen))?.id||'vehicles'
+ const [expanded,setExpanded]=useState<Record<string,boolean>>({[active]:true})
+ useEffect(()=>{setExpanded(old=>({...old,[active]:true}))},[active])
+ return <nav className="admin-module-nav" aria-label="Módulos da retaguarda">{groups.map(({id,label,icon:Icon,items})=>{const current=items.some(i=>i.screen===screen),open=!collapsed&&!!expanded[id];return <div className={`admin-nav-group ${current?'current-module':''}`} key={id}><button type="button" className="admin-nav-parent" title={collapsed?label:undefined} aria-label={label} aria-expanded={open} aria-controls={`admin-submenu-${id}`} onClick={()=>{if(collapsed){setExpanded(old=>({...old,[id]:true}));onExpand()}else setExpanded(old=>({...old,[id]:!old[id]}))}}><Icon size={18}/><span>{label}</span><ChevronDown size={15} className={open?'expanded':''}/></button><div id={`admin-submenu-${id}`} className="admin-submenu" hidden={!open}>{items.map(item=><button key={item.screen+item.view} type="button" className={screen===item.screen&&view===item.view?'selected':''} aria-current={screen===item.screen&&view===item.view?'page':undefined} onClick={()=>onNavigate(item)}>{item.label}</button>)}</div></div>})}</nav>
+}

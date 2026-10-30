@@ -1,0 +1,21 @@
+{
+  "name": "@dunna/backend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "node server/start.mjs",
+    "start": "node server/start.mjs",
+    "test": "node --test server/api.test.mjs server/ai.test.mjs server/renave.test.mjs server/commercial.test.mjs server/profile.test.mjs server/purchases.test.mjs server/inventory-operations.test.mjs server/analytics.test.mjs server/cloud.test.mjs server/origin.test.mjs server/seller.test.mjs server/quickpack.test.mjs server/legal.test.mjs server/stockflow.test.mjs server/dashboard.test.mjs server/notifications.test.mjs server/dunna.test.mjs",
+    "create:admin": "node scripts/create-admin.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.12"
+  }
+}
