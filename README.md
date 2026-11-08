@@ -18,7 +18,7 @@ O `npm run dev` sobe a API em `http://127.0.0.1:3001` e o painel em `http://loca
 ```sh
 npm run build          # gera frontend/dist
 npm start              # sobe só a API (porta 3001, ou PORT)
-npm run test:backend   # 35 testes de API em bancos temporários
+npm run test:backend   # testes de API em bancos temporários (SQLite e Postgres via PGlite)
 ```
 
 Os dados ficam em `data/` (`dunna.sqlite` e `uploads/`), ou no diretório indicado em `DUNNA_DATA_DIR`.
@@ -41,13 +41,20 @@ Os dados ficam em `data/` (`dunna.sqlite` e `uploads/`), ou no diretório indica
 - Contas a pagar e a receber com baixa parcial, estorno, edição e cancelamento com motivo (o registro nunca é apagado).
 - Lançamentos únicos, mensais recorrentes ou parcelados; categorias e contas bancárias/caixas com saldo inicial.
 - Fluxo de caixa realizado + previsto por mês ou dia, extrato por conta com saldo acumulado e exportação CSV.
+- Conciliação bancária por extrato OFX: sugere o lançamento em aberto de mesmo valor, baixa, cria lançamento pago ou ignora, sem repetir transações já importadas.
 
 **Veículos, Pessoas, Comercial, Jurídico** (herdados e mantidos da Aero)
 - Estoque, fotos, preparação, idade do estoque com sugestão de preço, compras, consignações, custos por veículo, consulta FIPE e descrição por IA.
 - Clientes, fornecedores e parceiros; funil de oportunidades com próximos contatos; avaliações de usados; propostas, trocas e vendas atômicas; margem e comissões.
 - Contratos de compra e venda, termo de entrega e checklist de documentos; preparação RENAVE.
 
-**Organização**
+**Vendas**
+- Estorno de venda: cancela as contas, devolve o carro ao estoque e desfaz troca e consignação, com motivo e histórico. Exige desfazer antes as baixas e o contrato assinado. Não altera NF-e nem RENAVE.
+
+**Organização e dados**
+- Importação de estoque, pessoas e contas por CSV, com conferência antes de gravar, relatório de erros por linha e proteção contra duplicados.
+- Exportação em CSV (abre no Excel) do estoque, do financeiro e dos relatórios de inteligência, e impressão/PDF pelo navegador.
+- Dados da loja editáveis em Administrativo.
 - Etiquetas coloridas em veículos, pessoas, interessados e negociações.
 - Busca geral na barra superior (Ctrl+K): veículos (também por placa, RENAVAM e chassi), interessados, tarefas, pessoas, negociações e lançamentos, respeitando loja e papel do usuário.
 
@@ -57,7 +64,7 @@ Os dados ficam em `data/` (`dunna.sqlite` e `uploads/`), ou no diretório indica
 - Administrador da loja: todos os módulos da própria loja.
 - Vendedor: estoque (leitura), os próprios interessados, as próprias tarefas e comissões.
 
-Todas as consultas aplicam a loja no servidor. Escritas exigem o cabeçalho `X-Dunna-Request` e origem compatível.
+Senha esquecida: link por e-mail válido por 1 hora (exige `RESEND_API_KEY`); sem e-mail configurado, o administrador gera o link em Equipe e acessos. Todas as consultas aplicam a loja no servidor. Escritas exigem o cabeçalho `X-Dunna-Request` e origem compatível.
 
 ## API pública para o site da loja
 
@@ -67,7 +74,7 @@ O painel não inclui vitrine, mas a API continua oferecendo `/api/stock?store=<i
 
 São dois projetos na Vercel no mesmo repositório: painel (raiz `frontend`) e API (raiz `backend`). O `frontend/vercel.json` repassa `/api/*` e `/uploads/*` para `dunna-backend.vercel.app`; troque esse endereço se a API ganhar outro.
 
-Variáveis da API: `DATABASE_URL` (Postgres, Transaction pooler), `DATABASE_CA_CERT`, `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` (arquivos), `DUNNA_ALLOWED_ORIGINS` (endereço do painel), e opcionais `OPENAI_API_KEY`/`OPENAI_MODEL` (descrição por IA) e `RESEND_API_KEY`/`DUNNA_NOTIFY_EMAIL`/`DUNNA_NOTIFY_FROM` (avisos por e-mail). Em produção o primeiro acesso é criado com `npm run create:admin --prefix backend`.
+Variáveis da API: `DATABASE_URL` (Postgres, Transaction pooler), `DATABASE_CA_CERT`, `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` (arquivos), `DUNNA_ALLOWED_ORIGINS` (endereço do painel), e opcionais `OPENAI_API_KEY`/`OPENAI_MODEL` (descrição por IA) e `RESEND_API_KEY`/`DUNNA_NOTIFY_EMAIL`/`DUNNA_NOTIFY_FROM` (avisos e recuperação de senha por e-mail; sem domínio verificado no Resend, o envio só chega ao e-mail da própria conta Resend), além de `DUNNA_SITE_URL` (endereço do painel nos links; padrão: o primeiro de `DUNNA_ALLOWED_ORIGINS`). Em produção o primeiro acesso é criado com `npm run create:admin --prefix backend`.
 
 ## Dados de teste
 

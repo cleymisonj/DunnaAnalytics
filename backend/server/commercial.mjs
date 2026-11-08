@@ -9,7 +9,7 @@ const decode = r => ({ ...JSON.parse(r.data), id: r.id, revision: r.revision, up
 export async function installCommercial(db) { for (const table of ['people', 'deals', 'ledger'])
     (await db.exec(`CREATE TABLE IF NOT EXISTS ${table}(id TEXT PRIMARY KEY,store_id TEXT NOT NULL REFERENCES stores(id),data TEXT NOT NULL,revision INTEGER NOT NULL DEFAULT 1,updated TEXT NOT NULL);CREATE INDEX IF NOT EXISTS ${table}_store ON ${table}(store_id);`)); }
 export async function commercialRoute({ req, res, route, c, db, body, send, admin, audit }) {
-    const match = route.match(/^\/api\/admin\/(people|deals|ledger)(?:\/([a-zA-Z0-9-]+)(?:\/(complete|payment))?)?$/);
+    const match = route.match(/^\/api\/admin\/(people|deals|ledger)(?:\/([a-zA-Z0-9-]+)(?:\/(complete|payment|reverse))?)?$/);
     if (!match)
         return false;
     (await admin());
@@ -86,7 +86,7 @@ export async function commercialRoute({ req, res, route, c, db, body, send, admi
         const key = id || randomUUID(), data = { vehicleId: text(v.vehicleId), personId: text(v.personId), sellerId, status: v.status, amountCents: v.amountCents, tradeIn, payoutDueDate: text(v.payoutDueDate, 10), payments: v.payments.map(p => ({ dueDate: p.dueDate, amountCents: p.amountCents })), notes: text(v.notes, 3000), createdAt: new Date().toISOString() };
         (await transaction(async () => { if (id) {
             const old = (await current(table, id, v.revision));
-            if (['completed', 'cancelled'].includes(old.status))
+            if (['completed', 'cancelled', 'reversed'].includes(old.status))
                 fail(409, 'Negociação encerrada não pode ser alterada.');
             data.createdAt = old.createdAt;
             (await update(table, id, data));
@@ -118,6 +118,39 @@ export async function commercialRoute({ req, res, route, c, db, body, send, admi
             await Promise.all(deal.payments.map(async (p, i) => (await insert('ledger', randomUUID(), { direction: 'income', description: `Venda ${vehicle.brand} ${vehicle.model} · ${i + 1}/${deal.payments.length}`, amountCents: p.amountCents, dueDate: p.dueDate, status: 'open', paidDate: '', vehicleId: deal.vehicleId, personId: deal.personId, dealId: id, customerName: customer.name, source: 'sale', notes: '' }))));
             (await update(table, id, { ...deal, ...inventoryResult, status: 'completed', personName: customer.name, vehicleLabel: [vehicle.brand, vehicle.model, vehicle.version, vehicle.year].join(' '), closedAt: new Date().toISOString() }));
             (await audit(c, 'deal.complete', id));
+        }));
+        send(res, decode((await row(table, id))));
+        return true;
+    }
+    // Estorno de venda: desfaz o fechamento sem apagar nada. Exige recebimentos e repasse sem baixa e contrato não assinado.
+    if (table === 'deals' && id && action === 'reverse' && req.method === 'POST') {
+        const reason = text(v.reason, 1000);
+        if (!reason) fail(422, 'Informe o motivo do estorno.');
+        (await transaction(async () => {
+            const deal = (await current(table, id, v.revision));
+            if (deal.status !== 'completed') fail(409, 'Somente vendas concluídas podem ser estornadas.');
+            const entries = (await list('ledger')).filter(e => e.dealId === id && e.status !== 'void');
+            if (entries.some(e => e.status === 'paid' || e.payments?.length)) fail(409, 'Há recebimentos ou repasse com baixa. Estorne essas baixas no Financeiro antes.');
+            const contracts = (await list('contracts')).filter(k => k.dealId === id && k.status !== 'cancelled');
+            if (contracts.some(k => k.status === 'signed')) fail(409, 'Existe contrato assinado desta venda. Cancele-o em Jurídico antes do estorno.');
+            const stamp = { cancelReason: `Estorno de venda: ${reason}`, cancelledBy: c.user.name, cancelledAt: new Date().toISOString() };
+            for (const k of contracts) (await update('contracts', k.id, { ...k, status: 'cancelled' }));
+            for (const e of entries) (await update('ledger', e.id, { ...e, status: 'void', ...stamp }));
+            if (deal.tradeIn?.purchaseId) {
+                const incoming = (await row('vehicles', deal.tradeIn.vehicleId));
+                if (incoming && JSON.parse(incoming.data).status === 'sold') fail(409, 'O veículo recebido na troca já foi vendido. Estorne aquela venda antes.');
+                const purchase = (await row('purchases', deal.tradeIn.purchaseId));
+                if (purchase) (await update('purchases', purchase.id, { ...decode(purchase), status: 'cancelled', cancelReason: stamp.cancelReason }));
+                if (incoming) (await update('vehicles', incoming.id, { ...JSON.parse(incoming.data), status: 'draft' }));
+            }
+            if (deal.consignment?.id) {
+                const consignment = (await row('consignments', deal.consignment.id));
+                if (consignment) { const { dealId, payoutLedgerId, soldAt, ...rest } = decode(consignment); (await update('consignments', consignment.id, { ...rest, status: 'active' })); }
+            }
+            const vehicleRow = (await row('vehicles', deal.vehicleId));
+            if (vehicleRow) { const car = JSON.parse(vehicleRow.data); (await update('vehicles', deal.vehicleId, { ...car, status: car.images?.length ? 'available' : 'draft' })); }
+            (await update(table, id, { ...deal, status: 'reversed', reversedAt: new Date().toISOString(), reversedBy: c.user.name, reverseReason: reason }));
+            (await audit(c, 'deal.reverse', id));
         }));
         send(res, decode((await row(table, id))));
         return true;

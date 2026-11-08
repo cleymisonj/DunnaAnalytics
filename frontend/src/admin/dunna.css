@@ -76,3 +76,17 @@
 @media(max-width:1100px){.dn-tips ul{grid-template-columns:1fr}.admin-stats.dn-kpis{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:900px){.dn-grid-2{grid-template-columns:1fr}.dn-search kbd{display:none}}
 @media(max-width:760px){.dn-pending li{grid-template-columns:1fr;gap:6px}.dn-task{grid-template-columns:auto 1fr}.dn-task-link{grid-column:2}.dn-search{max-width:none}.dn-hbars li{grid-template-columns:1fr auto}.dn-hbars .dn-hbar{grid-column:1/3;grid-row:2}.dn-funnel li{grid-template-columns:100px 1fr 34px}}
+
+/* Ferramentas: importação, conciliação, exportação e impressão */
+.admin-root .dn-narrow{max-width:720px}.dn-narrow form{margin-top:4px}.admin-auth-card a.admin-primary{display:flex;width:100%}
+.dn-import-check{margin-top:18px}.dn-import-errors{list-style:none;margin:0 0 14px;padding:12px 14px;background:#fff0f0;border-radius:8px;color:#9f1520;font-size:12px;display:grid;gap:3px;max-height:220px;overflow:auto}
+.dn-recon{display:flex;gap:8px;flex-wrap:wrap}.admin-root .dn-recon select{min-height:36px;padding:6px 9px;font-size:12px;width:auto;max-width:320px}
+.dn-recon-footer{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.dn-export{display:inline-flex;gap:8px;margin-left:auto}.admin-root .dn-export .admin-secondary{min-height:36px;padding:7px 12px;font-size:12px}
+@media print{
+ .admin-sidebar,.admin-topbar,.dn-chips,.dn-export,.admin-page-heading>button,.admin-toast{display:none!important}
+ .admin-workspace{margin:0!important;padding:0!important}.admin-main{padding:0!important}
+ .admin-root .admin-card,.admin-stats>div{break-inside:avoid;box-shadow:none}
+ .dn-grid-2{grid-template-columns:1fr 1fr}
+}
+.admin-root .admin-upload input[type=file]{position:absolute;width:1px;height:1px;min-height:0;padding:0;opacity:0;overflow:hidden}.admin-upload{position:relative}

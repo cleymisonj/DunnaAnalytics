@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { ArrowRight, Lightbulb, TrendingDown, TrendingUp, AlertTriangle, Info } from 'lucide-react'
+import { ArrowRight, Download, Printer, Lightbulb, TrendingDown, TrendingUp, AlertTriangle, Info } from 'lucide-react'
 import type { Destination } from './Navigation'
-import { Notice, Delta, money, moneyFull, dateBR, today, addDays, monthLabel, useResource } from './kit'
+import { Notice, Delta, money, moneyFull, dateBR, today, addDays, monthLabel, useResource, downloadCsv, csvMoney } from './kit'
 import { Bars, BarPair, Funnel } from './Charts'
 import { STAGES } from './api'
 
@@ -34,7 +34,7 @@ export default function Insights({ storeId, view, onNavigate }: { storeId: strin
  return <>
   <div className="dn-filters"><div className="dn-chips" role="group" aria-label="Período">{PERIODS.map(([l, a, b]) => <button key={l} className={`admin-chip ${!custom && period[0] === a && period[1] === b ? 'active' : ''}`} onClick={() => { setCustom(false); setPeriod([a, b]) }}>{l}</button>)}<button className={`admin-chip ${custom ? 'active' : ''}`} onClick={() => setCustom(true)}>Personalizado</button></div>
    {custom && <><input type="date" aria-label="De" value={period[0]} max={period[1]} onChange={e => e.target.value && setPeriod([e.target.value, period[1]])} /><input type="date" aria-label="Até" value={period[1]} min={period[0]} onChange={e => e.target.value && setPeriod([period[0], e.target.value])} /></>}
-   {data && <span className="dn-muted">Comparando com {dateBR(data.previous.from)} a {dateBR(data.previous.to)}</span>}</div>
+   {data && <span className="dn-muted">Comparando com {dateBR(data.previous.from)} a {dateBR(data.previous.to)}</span>}{data && <span className="dn-export"><button className="admin-secondary" onClick={() => exportReport(view, data)}><Download size={15} /> CSV</button><button className="admin-secondary" onClick={() => window.print()}><Printer size={15} /> Imprimir / PDF</button></span>}</div>
   {error && <Notice>{error}</Notice>}
   {!data ? !error && <div className="admin-empty">Calculando indicadores…</div> : <>
    {view === 'all' && <Overview r={data} onNavigate={onNavigate} />}
@@ -44,6 +44,16 @@ export default function Insights({ storeId, view, onNavigate }: { storeId: strin
    {view === 'team' && <TeamView r={data} />}
   </>}
  </>
+}
+
+// Cada visão exporta a sua tabela principal
+function exportReport(view: string, r: Report) {
+ const tag = `${r.from}-a-${r.to}`, n = (v: number | null) => v === null ? '' : String(v).replace('.', ',')
+ if (view === 'dre') { const c = r.dre.current, p = r.dre.previous; const line = (a: string, x: number, y: number) => [a, csvMoney(x), csvMoney(y)]; return downloadCsv(`dre-${tag}.csv`, ['Conta', 'Período', 'Anterior'], [line('Receita bruta de vendas', c.revenueCents, p.revenueCents), line('(-) Custo dos veículos vendidos', -c.cogsCents, -p.cogsCents), line('(=) Lucro bruto', c.grossCents, p.grossCents), line('(-) Comissões de venda', -c.commissionCents, -p.commissionCents), line('(+) Outras receitas', c.otherIncomeCents, p.otherIncomeCents), ...c.otherIncome.map(x => line('    ' + x.name, x.cents, p.otherIncome.find(y => y.id === x.id)?.cents || 0)), line('(-) Despesas operacionais', -c.opexCents, -p.opexCents), ...c.opex.map(x => line('    ' + x.name, -x.cents, -(p.opex.find(y => y.id === x.id)?.cents || 0))), line('(=) Resultado operacional', c.resultCents, p.resultCents)]) }
+ if (view === 'stock') return downloadCsv(`estoque-por-marca-${tag}.csv`, ['Marca', 'Em estoque', 'Valor em estoque', 'Vendidos', 'Margem %', 'Dias para vender'], r.mix.brand.map(x => [x.key, x.stock, csvMoney(x.stockValueCents), x.sold, n(x.marginPct), x.avgDaysToSell]))
+ if (view === 'funnel') return downloadCsv(`origem-dos-leads-${tag}.csv`, ['Origem', 'Interessados', 'Ganhos', 'Perdidos', 'Conversão %'], r.funnel.sources.map(x => [x.source, x.leads, x.won, x.lost, n(x.conversionPct)]))
+ if (view === 'team') return downloadCsv(`equipe-${tag}.csv`, ['Vendedor', 'Vendas', 'Faturamento', 'Margem', 'Margem %', 'Comissão', 'Leads', 'Conversão %', 'Em atendimento'], r.team.map(t => [t.name, t.sales, csvMoney(t.revenueCents), csvMoney(t.marginCents), n(t.marginPct), csvMoney(t.commissionCents), t.leads, n(t.conversionPct), t.openLeads]))
+ return downloadCsv(`vendas-${tag}.csv`, ['Data', 'Veículo', 'Cliente', 'Vendedor', 'Venda', 'Custo', 'Margem', 'Margem %', 'Dias para vender'], r.sales.list.map(s => [dateBR(s.closedAt), s.vehicleLabel, s.personName, s.sellerName, csvMoney(s.saleCents), csvMoney(s.costCents), csvMoney(s.marginCents), n(s.marginPct), s.daysToSell]))
 }
 
 function Kpi({ label, value, delta, note, invert }: { label: string; value: string; delta?: number | null; note?: string; invert?: boolean }) {

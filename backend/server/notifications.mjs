@@ -20,7 +20,15 @@ export async function installNotifications(db) {
 export function emailConfig(env = process.env) {
     const key = env.RESEND_API_KEY || '';
     const to = String(env.DUNNA_NOTIFY_EMAIL || '').split(',').map((e) => e.trim()).filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
-    return key && to.length ? { key, to, from: env.DUNNA_NOTIFY_FROM || 'Minha loja <onboarding@resend.dev>' } : null;
+    return key && to.length ? { key, to, from: env.DUNNA_NOTIFY_FROM || 'Dunna Analytics <onboarding@resend.dev>' } : null;
+}
+
+/** E-mail avulso (recuperação de senha). Retorna false quando o envio não está configurado. */
+export async function sendMail({ to, subject, html }, env = process.env) {
+    if (!env.RESEND_API_KEY) return false;
+    const r = await fetchImpl('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: env.DUNNA_NOTIFY_FROM || 'Dunna Analytics <onboarding@resend.dev>', to: [to], subject, html }), signal: AbortSignal.timeout(8000) });
+    if (!r.ok) throw new Error('email ' + r.status);
+    return true;
 }
 
 async function sendEmail(config, n, storeName) {

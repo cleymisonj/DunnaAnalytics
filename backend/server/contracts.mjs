@@ -190,7 +190,7 @@ export async function contractRoute({ req, res, route, c, db, body, send, admin,
         if (!type) fail(422, 'Tipo de contrato inválido.');
         const ref = type.source === 'deal' ? await row('deals', text(v.dealId, 64)) : await row('purchases', text(v.purchaseId, 64));
         if (!ref) fail(422, type.source === 'deal' ? 'Selecione uma negociação desta loja.' : 'Selecione uma compra desta loja.');
-        if (type.source === 'deal' && ref.status === 'cancelled') fail(422, 'Negociação cancelada.');
+        if (type.source === 'deal' && ['cancelled', 'reversed'].includes(ref.status)) fail(422, 'Negociação cancelada ou estornada.');
         const open = (await db.prepare('SELECT * FROM contracts WHERE store_id=?').all(c.storeId)).map(decode).find((k) => k.type === v.type && k.status !== 'cancelled' && (k.dealId || k.purchaseId) === ref.id);
         if (open) fail(409, 'Já existe um contrato deste tipo para este processo.');
         const year = new Date().getFullYear();

@@ -2,11 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "functions": {
-    "api/stock.js": {
-      "includeFiles": "server/public-stock.json"
-    },
     "api/backend.js": {
-      "includeFiles": "server/seed.json",
       "maxDuration": 60
     }
   },

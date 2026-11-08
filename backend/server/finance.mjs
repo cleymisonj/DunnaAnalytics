@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 
 // Financeiro completo: contas bancárias, categorias, baixa parcial, recorrência, fluxo de caixa e extrato.
 // Os lançamentos continuam na tabela ledger (criados também por vendas, compras, consignações e preparação);
@@ -39,7 +39,22 @@ export function movementsOf(e) {
     return out;
 }
 
+/** Lê as transações de um extrato OFX (formato SGML dos bancos brasileiros, com ou sem tags de fechamento). */
+export function parseOfx(content) {
+    const field = (block, tag) => block.match(new RegExp(`<${tag}>([^<\\r\\n]*)`, 'i'))?.[1]?.trim() || '';
+    const out = [];
+    for (const [, block] of String(content).matchAll(/<STMTTRN>([\s\S]*?)(?=<\/STMTTRN>|<STMTTRN>|<\/BANKTRANLIST>)/gi)) {
+        const raw = field(block, 'DTPOSTED'), date = `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`, cents = Math.round(Number(field(block, 'TRNAMT').replace(',', '.')) * 100);
+        if (!isDate(date) || !Number.isFinite(cents) || !cents) continue;
+        const memo = [field(block, 'NAME'), field(block, 'MEMO')].filter(Boolean).join(' · ').slice(0, 200) || 'Movimento bancário';
+        const fitid = field(block, 'FITID') || createHash('sha256').update(date + cents + memo).digest('hex').slice(0, 32);
+        out.push({ fitid: fitid.slice(0, 120), date, amountCents: Math.abs(cents), direction: cents > 0 ? 'income' : 'expense', memo });
+    }
+    return out;
+}
+
 export async function installFinance(db) {
+    await db.exec('CREATE TABLE IF NOT EXISTS bank_transactions(id TEXT PRIMARY KEY,store_id TEXT NOT NULL REFERENCES stores(id),account_id TEXT NOT NULL,data TEXT NOT NULL,created TEXT NOT NULL);CREATE INDEX IF NOT EXISTS bank_transactions_store ON bank_transactions(store_id,account_id);');
     await db.exec('CREATE TABLE IF NOT EXISTS finance_settings(store_id TEXT PRIMARY KEY REFERENCES stores(id),data TEXT NOT NULL,revision INTEGER NOT NULL DEFAULT 1,updated TEXT NOT NULL);');
 }
 
@@ -153,6 +168,56 @@ export async function financeRoute({ req, res, route, c, db, body, send, admin, 
     const transaction = async (fn) => { await db.exec('BEGIN IMMEDIATE'); try { const r = await fn(); await db.exec('COMMIT'); return r; } catch (e) { await db.exec('ROLLBACK'); throw e; } };
     const row = async (id) => { const r = await db.prepare('SELECT * FROM ledger WHERE id=? AND store_id=?').get(id, c.storeId); return r ? decode(r) : null; };
     const save = async ({ id, revision, updatedAt, ...data }) => await db.prepare('UPDATE ledger SET data=?,revision=revision+1,updated=? WHERE id=? AND store_id=?').run(JSON.stringify(data), new Date().toISOString(), id, c.storeId);
+    const bankId = (accountId, fitid) => createHash('sha256').update(`${c.storeId}:${accountId}:${fitid}`).digest('hex');
+    if (route === '/api/admin/finance/ofx' && req.method === 'POST') {
+        const v = await body(req, 3 * 1024 * 1024), accountId = account(text(v?.accountId, 64));
+        if (!accountId) fail(422, 'Selecione a conta do extrato.');
+        const txs = parseOfx(v.content);
+        if (!txs.length) fail(422, 'Nenhuma transação encontrada. Confira se o arquivo é um extrato OFX.');
+        if (txs.length > 2000) fail(422, 'Extrato muito grande: envie até 2.000 transações por vez.');
+        const known = new Set((await db.prepare('SELECT id FROM bank_transactions WHERE store_id=? AND account_id=?').all(c.storeId, accountId)).map((r) => r.id));
+        const ledger = await ledgerOf(db, c.storeId), moves = ledger.flatMap(movementsOf), used = new Set();
+        const near = (a, b, days) => Math.abs(Date.parse(a) - Date.parse(b)) <= days * 86400000;
+        const rows = txs.map((t) => {
+            if (known.has(bankId(accountId, t.fitid))) return { ...t, status: 'imported' };
+            const paid = moves.find((m) => m.accountId === accountId && m.direction === t.direction && m.amountCents === t.amountCents && near(m.date, t.date, 2));
+            if (paid) return { ...t, status: 'registered', entryId: paid.entryId, entryLabel: paid.description };
+            const match = ledger.filter((e) => e.direction === t.direction && remainingCents(e) === t.amountCents && !used.has(e.id) && near(e.dueDate, t.date, 10)).sort((a, b) => Math.abs(Date.parse(a.dueDate) - Date.parse(t.date)) - Math.abs(Date.parse(b.dueDate) - Date.parse(t.date)))[0];
+            if (match) { used.add(match.id); return { ...t, status: 'suggested', entryId: match.id, entryLabel: match.description, entryDue: match.dueDate }; }
+            return { ...t, status: 'new' };
+        });
+        send(res, { accountId, rows });
+        return true;
+    }
+    if (route === '/api/admin/finance/reconcile' && req.method === 'POST') {
+        const v = await body(req, 3 * 1024 * 1024), accountId = account(text(v?.accountId, 64));
+        if (!accountId || !Array.isArray(v.items) || !v.items.length || v.items.length > 2000) fail(422, 'Dados inválidos.');
+        const counts = { matched: 0, created: 0, ignored: 0, skipped: 0 };
+        await transaction(async () => {
+            for (const item of v.items) {
+                const fitid = text(item?.fitid, 120), id = bankId(accountId, fitid), direction = item?.direction, memo = text(item?.memo) || 'Movimento bancário';
+                if (!fitid || !['income', 'expense'].includes(direction) || !money(item.amountCents) || !isDate(item.date)) fail(422, 'Transação inválida no extrato.');
+                if (await db.prepare('SELECT id FROM bank_transactions WHERE id=?').get(id)) { counts.skipped++; continue; }
+                let entryId = '';
+                if (item.action === 'match') {
+                    const e = await row(text(item.entryId, 64));
+                    if (!e || e.direction !== direction || remainingCents(e) !== item.amountCents) fail(409, `"${memo}" não confere mais com o lançamento. Reenvie o extrato.`);
+                    await save({ ...e, payments: [...(e.payments || []), { id: randomUUID(), date: item.date, amountCents: item.amountCents, accountId, by: c.user.name, at: new Date().toISOString(), bank: true }], status: 'paid', paidDate: item.date });
+                    await audit(c, 'ledger.reconcile', e.id);
+                    entryId = e.id; counts.matched++;
+                } else if (item.action === 'create') {
+                    entryId = randomUUID();
+                    await db.prepare('INSERT INTO ledger VALUES(?,?,?,1,?)').run(entryId, c.storeId, JSON.stringify({ direction, description: memo, amountCents: item.amountCents, dueDate: item.date, status: 'paid', paidDate: item.date, payments: [{ id: randomUUID(), date: item.date, amountCents: item.amountCents, accountId, by: c.user.name, at: new Date().toISOString(), bank: true }], vehicleId: '', personId: '', dealId: '', source: 'manual', categoryId: category(text(item.categoryId, 64), direction), accountId, notes: 'Criado pela conciliação bancária.', createdBy: c.user.name, createdAt: new Date().toISOString() }), new Date().toISOString());
+                    await audit(c, 'ledger.create', entryId);
+                    counts.created++;
+                } else if (item.action === 'ignore') counts.ignored++;
+                else fail(422, 'Ação de conciliação inválida.');
+                await db.prepare('INSERT INTO bank_transactions VALUES(?,?,?,?,?)').run(id, c.storeId, accountId, JSON.stringify({ fitid, date: item.date, amountCents: item.amountCents, direction, memo, action: item.action, entryId }), new Date().toISOString());
+            }
+        });
+        send(res, counts);
+        return true;
+    }
     if (route === '/api/admin/finance/entries' && req.method === 'POST') {
         const v = await body(req);
         if (!['income', 'expense'].includes(v.direction) || !text(v.description) || !money(v.amountCents) || !isDate(v.dueDate)) fail(422, 'Informe descrição, tipo, valor e vencimento válidos.');

@@ -14,6 +14,8 @@ import { installAgenda, agendaRoute } from './agenda.mjs';
 import { installFinance, financeRoute } from './finance.mjs';
 import { installTags, tagRoute } from './search.mjs';
 import { insightsRoute } from './insights.mjs';
+import { installRecovery, recoveryRoute, adminResetLink } from './recovery.mjs';
+import { importRoute } from './import.mjs';
 import { installNotifications, notificationRoute, publicLeadRoute } from './notifications.mjs';
 import { installCommercial, commercialRoute } from './commercial.mjs';
 import { installRenave, readRenave, saveRenave } from './renave.mjs';
@@ -125,6 +127,7 @@ export async function createApi({ database, storage, privateFiles, root = backen
     (await installAgenda(db));
     (await installFinance(db));
     (await installTags(db));
+    (await installRecovery(db));
     // Arquivos privados: Supabase quando a API roda na nuvem (com armazenamento de fotos), senão pasta local
     const files = createFiles({ db, dataDir, remote: privateFiles !== undefined ? privateFiles : storage ? createSupabaseFiles() : null });
     const audit = async (c, a, id) => (await db.prepare('INSERT INTO audit(store_id,user_id,action,entity_id,created) VALUES(?,?,?,?,?)').run(c.storeId, c.user.id, a, id, now()));
@@ -208,6 +211,8 @@ export async function createApi({ database, storage, privateFiles, root = backen
                 (await login(res, u));
                 return send(res, { user: viewUser(u) });
             }
+            if (await recoveryRoute({ req, res, route, db, body, send, limit, ip: clientAddress(req), hashPassword }))
+                return;
             if (route === '/api/auth/logout' && req.method === 'POST') {
                 const t = cookie(req);
                 if (t)
@@ -319,6 +324,8 @@ export async function createApi({ database, storage, privateFiles, root = backen
                 return;
             if (await financeRoute({ req, res, route, c, db, body, send, admin: async () => (await context(req, true)), audit }))
                 return;
+            if (await importRoute({ req, res, route, c, db, body, send, admin: async () => (await context(req, true)), audit, validateVehicle }))
+                return;
             if (await insightsRoute({ req, res, route, c, db, send, admin: async () => (await context(req, true)) }))
                 return;
             if (await consignmentRoute({ req, res, route, c, db, body, send, admin: async () => (await context(req, true)), audit }))
@@ -398,6 +405,25 @@ export async function createApi({ database, storage, privateFiles, root = backen
                     (await audit(c, 'store.create', id));
                     return send(res, (await db.prepare('SELECT * FROM stores WHERE id=?').get(id)), 201);
                 }
+            }
+            const sm = route.match(/^\/api\/admin\/stores\/([a-zA-Z0-9-]+)$/);
+            if (sm && req.method === 'PUT') {
+                (await context(req, true));
+                if (c.user.role !== 'platform' && sm[1] !== c.user.store_id)
+                    fail(403, 'Sem permissão para esta loja.');
+                const v = await body(req), phone = String(v?.phone || '').replace(/\D/g, '');
+                if (!text(v?.name) || !text(v?.city) || !/^\d{10,11}$/.test(phone))
+                    fail(422, 'Preencha nome, telefone com DDD e cidade.');
+                if (!(await db.prepare('SELECT id FROM stores WHERE id=?').get(sm[1])))
+                    fail(404, 'Loja não encontrada.');
+                (await db.prepare('UPDATE stores SET name=?,phone=?,city=? WHERE id=?').run(text(v.name), phone, text(v.city), sm[1]));
+                (await audit(c, 'store.update', sm[1]));
+                return send(res, (await db.prepare('SELECT * FROM stores WHERE id=?').get(sm[1])));
+            }
+            const rm = route.match(/^\/api\/admin\/users\/([a-zA-Z0-9-]+)\/reset-link$/);
+            if (rm && req.method === 'POST') {
+                (await context(req, true));
+                return await adminResetLink({ req, res, db, c, userId: rm[1], send, audit });
             }
             if (route === '/api/admin/users') {
                 (await context(req, true));

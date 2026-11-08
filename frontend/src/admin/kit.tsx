@@ -14,6 +14,21 @@ export const monthLabel = (ym: string) => `${new Date(Date.UTC(+ym.slice(0, 4), 
 export const toCents = (s: string) => { const t = s.trim().replace(/[R$\s]/g, ''); const n = Number(t.includes(',') ? t.replace(/\./g, '').replace(',', '.') : t); return Number.isFinite(n) ? Math.round(n * 100) : NaN }
 export const centsInput = (c: number) => (c / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
+/** Baixa um CSV que o Excel em português abre direto (ponto e vírgula e BOM). */
+export function downloadCsv(filename: string, header: string[], rows: (string | number | null)[][]) {
+ const cell = (c: string | number | null) => `"${String(c ?? '').replace(/"/g, '""')}"`
+ const body = [header, ...rows].map(r => r.map(cell).join(';')).join('\r\n')
+ const url = URL.createObjectURL(new Blob(['\ufeff' + body], { type: 'text/csv;charset=utf-8' })), a = document.createElement('a')
+ a.href = url; a.download = filename; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+/** Centavos como número para planilha: 1234,56. */
+export const csvMoney = (c: number | null) => c === null ? '' : (c / 100).toFixed(2).replace('.', ',')
+/** Lê arquivo de texto em UTF-8; se não for válido, usa Windows-1252 (Excel e bancos brasileiros). */
+export async function readTextFile(file: File) {
+ const bytes = await file.arrayBuffer()
+ try { return new TextDecoder('utf-8', { fatal: true }).decode(bytes) } catch { return new TextDecoder('windows-1252').decode(bytes) }
+}
+
 export function Field({ label, children, wide = false }: { label: string; children: ReactNode; wide?: boolean }) { return <label className={`admin-field ${wide ? 'wide' : ''}`}><span>{label}</span>{children}</label> }
 export function Notice({ children }: { children: ReactNode }) { return <div className="admin-notice" role="alert">{children}</div> }
 export function Delta({ value, suffix = '%', invert = false }: { value: number | null; suffix?: string; invert?: boolean }) {
