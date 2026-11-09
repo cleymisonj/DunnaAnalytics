@@ -32,7 +32,7 @@ export async function readTextFile(file: File) {
 export function Field({ label, children, wide = false }: { label: string; children: ReactNode; wide?: boolean }) { return <label className={`admin-field ${wide ? 'wide' : ''}`}><span>{label}</span>{children}</label> }
 export function Notice({ children }: { children: ReactNode }) { return <div className="admin-notice" role="alert">{children}</div> }
 export function Delta({ value, suffix = '%', invert = false }: { value: number | null; suffix?: string; invert?: boolean }) {
- if (value === null || value === undefined) return <span className="dn-delta neutral">sem base anterior</span>
+ if (value === null || value === undefined) return <span className="dn-delta none" title="Sem período anterior para comparar">—</span>
  const good = invert ? value < 0 : value > 0
  return <span className={`dn-delta ${value === 0 ? 'neutral' : good ? 'up' : 'down'}`}>{value > 0 ? '▲' : value < 0 ? '▼' : '■'} {Math.abs(value).toLocaleString('pt-BR')}{suffix}</span>
 }

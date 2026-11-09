@@ -71,11 +71,11 @@ function EntryTable({ entries, settings, empty, actions }: { entries: Entry[]; s
  const names = new Map(settings.categories.map(c => [c.id, c.name])), accounts = new Map(settings.accounts.map(a => [a.id, a.name])), t = today()
  if (!entries.length) return <div className="admin-empty"><p>{empty}</p></div>
  return <div className="admin-table-wrap"><table className="admin-table dn-entries"><thead><tr><th>Vencimento</th><th>Descrição</th><th className="num">Valor</th><th className="num">Pago</th><th>Situação</th>{actions && <th></th>}</tr></thead><tbody>{entries.map(e => { const paid = paidOf(e), late = e.status === 'open' && e.dueDate < t; return <tr key={e.id} className={e.status === 'void' ? 'void' : ''}>
-  <td>{dateBR(e.dueDate)}{late && <small className="dn-bad">em atraso</small>}</td>
+  <td>{dateBR(e.dueDate)}</td>
   <td><strong className={e.direction === 'income' ? 'dn-in' : 'dn-out'}>{e.direction === 'income' ? <ArrowDownLeft size={13} /> : <ArrowUpRight size={13} />} {e.description}</strong><small>{[names.get(categoryOf(e)), e.accountId && accounts.get(e.accountId), SOURCE_LABEL[e.source], e.customerName].filter(Boolean).join(' · ')}</small></td>
   <td className="num">{moneyFull(e.amountCents)}</td>
   <td className="num">{paid ? moneyFull(paid) : '—'}{e.status === 'open' && paid > 0 && <small>falta {moneyFull(e.amountCents - paid)}</small>}</td>
-  <td><span className={`admin-status ${e.status === 'paid' ? 'available' : e.status === 'void' ? 'sold' : late ? 'overdue' : paid ? 'reserved' : 'draft'}`}>{e.status === 'paid' ? `Baixado ${dateBR(e.paidDate)}` : e.status === 'void' ? 'Cancelado' : paid ? 'Parcial' : 'Em aberto'}</span></td>
+  <td><span className={`admin-status ${e.status === 'paid' ? 'available' : e.status === 'void' ? 'sold' : late ? 'overdue' : paid ? 'reserved' : 'draft'}`}>{e.status === 'paid' ? `Baixado ${dateBR(e.paidDate)}` : e.status === 'void' ? 'Cancelado' : late ? 'Em atraso' : paid ? 'Parcial' : 'Em aberto'}</span></td>
   {actions && <td><div className="admin-row-actions">{actions(e)}</div></td>}
  </tr> })}</tbody></table></div>
 }
