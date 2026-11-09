@@ -14,10 +14,10 @@ export default {
     container: { center: true, padding: { DEFAULT: '1rem', lg: '2rem' }, screens: { '2xl': '1360px' } },
     extend: {
       colors: {
-        carbon: '#1d222b', // fundo da página
+        carbon: '#1d222b', // fundo de controles (tema escuro)
         slate: { DEFAULT: '#161a21', raised: '#1d222b' }, // card branco e degrau cinza
-        ink: { DEFAULT: '#E8EBF0', muted: '#9AA3B1' }, // grafite e cinza (≥ 4.5:1 sobre o fundo)
-        racing: { DEFAULT: '#E5182B', hover: '#C8101F' }, // vermelho da logo; branco sobre ele ≥ 4.5:1
+        ink: { DEFAULT: '#E8EBF0', muted: '#9AA3B1' }, // texto claro e secundário (≥ 4.5:1 sobre o fundo escuro)
+        racing: { DEFAULT: '#F56600', hover: '#D85A00' }, // laranja da logo; texto escuro sobre ele
         paper: { DEFAULT: '#11151C', ink: '#F4F5F7', muted: '#A9B1BD' }, // recibo escuro sobre a página clara
         night: '#0E1116', // rodapé escuro, onde a logo prata aparece
       },

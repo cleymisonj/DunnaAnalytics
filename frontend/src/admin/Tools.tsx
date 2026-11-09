@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { CheckCircle2, Download, FileUp, ShieldCheck } from 'lucide-react'
 import { request, type Store } from './api'
-import { DunnaLogo } from './Brand'
+import { DunnaLockup } from './Brand'
 import { Field, Notice, downloadCsv, messageOf, readTextFile } from './kit'
 
 // Recuperação de senha, dados da loja e importação de planilhas.
@@ -15,7 +15,7 @@ export function ForgotPassword({ onBack }: { onBack: () => void }) {
 export function ResetPassword({ token }: { token: string }) {
  const [password, setPassword] = useState(''), [confirm, setConfirm] = useState(''), [done, setDone] = useState(false), [error, setError] = useState(''), [busy, setBusy] = useState(false)
  const submit = async (e: FormEvent) => { e.preventDefault(); if (password !== confirm) { setError('As senhas não conferem.'); return } setBusy(true); setError(''); try { await request('/api/auth/reset', { method: 'POST', body: JSON.stringify({ token, password }) }); setDone(true) } catch (err) { setError(messageOf(err)) } finally { setBusy(false) } }
- return <main className="admin-root admin-auth"><span className="admin-brand"><DunnaLogo /></span><section className="admin-auth-card"><span className="admin-kicker">NOVA SENHA</span><h1>{done ? 'Senha alterada' : 'Crie sua nova senha'}</h1>{done ? <><p>Todas as sessões antigas foram encerradas. Entre com a nova senha.</p><a className="admin-primary dn-mt" href="/">Ir para o login</a></> : <form onSubmit={submit}><Field label="Nova senha"><input type="password" autoComplete="new-password" required minLength={12} maxLength={200} value={password} onChange={e => setPassword(e.target.value)} /></Field><Field label="Repita a nova senha"><input type="password" autoComplete="new-password" required minLength={12} maxLength={200} value={confirm} onChange={e => setConfirm(e.target.value)} /></Field><small>Use pelo menos 12 caracteres.</small>{error && <Notice>{error}</Notice>}<button className="admin-primary" disabled={busy}>{busy ? 'Salvando…' : 'Salvar nova senha'}</button></form>}</section><span className="admin-auth-note"><ShieldCheck size={15} /> Link de uso único, válido por 1 hora</span></main>
+ return <main className="admin-root admin-auth"><span className="admin-brand admin-brand-lockup"><DunnaLockup/></span><section className="admin-auth-card"><span className="admin-kicker">NOVA SENHA</span><h1>{done ? 'Senha alterada' : 'Crie sua nova senha'}</h1>{done ? <><p>Todas as sessões antigas foram encerradas. Entre com a nova senha.</p><a className="admin-primary dn-mt" href="/">Ir para o login</a></> : <form onSubmit={submit}><Field label="Nova senha"><input type="password" autoComplete="new-password" required minLength={12} maxLength={200} value={password} onChange={e => setPassword(e.target.value)} /></Field><Field label="Repita a nova senha"><input type="password" autoComplete="new-password" required minLength={12} maxLength={200} value={confirm} onChange={e => setConfirm(e.target.value)} /></Field><small>Use pelo menos 12 caracteres.</small>{error && <Notice>{error}</Notice>}<button className="admin-primary" disabled={busy}>{busy ? 'Salvando…' : 'Salvar nova senha'}</button></form>}</section><span className="admin-auth-note"><ShieldCheck size={15} /> Link de uso único, válido por 1 hora</span></main>
 }
 
 export function StoreSettings({ store, onSaved }: { store: Store; onSaved: () => void }) {

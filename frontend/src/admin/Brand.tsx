@@ -1,7 +1,11 @@
-/** Marca Dunna Analytics: monograma "D" com barras de gráfico e o nome ao lado. */
-export function DunnaMark({size=34}:{size?:number}) {
- return <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" className="dunna-mark"><rect width="64" height="64" rx="14" fill="#e5182b"/><path d="M18 14h13c11 0 19 7.6 19 18s-8 18-19 18H18z" fill="none" stroke="#fff" strokeWidth="6"/><path d="M27 40V30M34 40V24M41 40v-6" stroke="#ffb3b9" strokeWidth="4" strokeLinecap="round"/></svg>
+/** Marca Dunna Analytics: símbolo "D" com barras (public/brand) e nome em texto, para ficar nítido em qualquer tamanho. */
+export function DunnaMark({size=36}:{size?:number}) {
+ return <img src="/brand/dunna-mark.png" alt="" width={size} height={Math.round(size*0.82)} className="dunna-mark"/>
 }
 export function DunnaLogo({compact=false}:{compact?:boolean}) {
- return <span className="dunna-logo" aria-label="Dunna Analytics"><DunnaMark/>{!compact&&<span className="dunna-word"><strong>dunna</strong><small>ANALYTICS</small></span>}</span>
+ return <span className="dunna-logo" aria-label="Dunna Analytics"><DunnaMark/>{!compact&&<span className="dunna-word"><strong>DUNNA</strong><small>ANALYTICS</small></span>}</span>
+}
+/** Logotipo completo, com o slogan, para a tela de entrada. */
+export function DunnaLockup() {
+ return <img src="/brand/dunna-logo.png" alt="Dunna Analytics · Inteligência em performance automotiva" className="dunna-lockup" width={450} height={115}/>
 }

@@ -6,7 +6,7 @@
   html { color-scheme: dark; }
   body { margin: 0; background: #0e1014; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #e8ebf0; -webkit-font-smoothing: antialiased; }
   h1, h2, h3 { text-wrap: balance; }
-  ::selection { background: #e5182b; color: #fff; }
+  ::selection { background: #f56600; color: #fff; }
 }
 
 @media (prefers-reduced-motion: reduce) {
